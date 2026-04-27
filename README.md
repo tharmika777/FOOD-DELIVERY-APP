@@ -1,4 +1,4 @@
-# 🍔 FoodieGo (Zomato/Swiggy Clone)
+# 🍔 FoodieGo
 
 FoodieGo is a simple **food delivery website** inspired by **Zomato/Swiggy**, built using **HTML, CSS, and JavaScript** in a single file.
 
