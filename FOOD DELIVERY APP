@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FoodieGo | Zomato / Swiggy Style</title>
+
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", Arial, sans-serif;
+    }
+
+    body{
+      background: #f7f7ff;
+      color: #222;
+    }
+
+    header{
+      background: linear-gradient(90deg, #ff2e63, #ff7b54, #ffcc29);
+      padding: 15px 20px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0px 4px 15px rgba(0,0,0,0.2);
+    }
+
+    header h1{
+      font-size: 26px;
+      font-weight: 800;
+    }
+
+    .searchBox{
+      flex: 1;
+      display: flex;
+      justify-content: center;
+    }
+
+    .searchBox input{
+      width: 100%;
+      max-width: 450px;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.15);
+    }
+
+    .cartBtn{
+      background: white;
+      color: #ff2e63;
+      padding: 12px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: bold;
+      border: none;
+      font-size: 15px;
+      transition: 0.3s;
+    }
+
+    .cartBtn:hover{
+      background: #ffe1ea;
+      transform: scale(1.05);
+    }
+
+    .container{
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .banner{
+      background: linear-gradient(to right, #ff2e63, #ff7b54);
+      color: white;
+      padding: 30px;
+      border-radius: 18px;
+      margin-bottom: 25px;
+      text-align: center;
+      box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .banner h2{
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+
+    .banner p{
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .categories{
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+
+    .cat{
+      background: white;
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      border: 2px solid #ff2e63;
+      color: #ff2e63;
+      transition: 0.3s;
+      white-space: nowrap;
+    }
+
+    .cat:hover{
+      background: #ff2e63;
+      color: white;
+      transform: scale(1.05);
+    }
+
+    .section-title{
+      font-size: 22px;
+      margin: 15px 0;
+      font-weight: 800;
+    }
+
+    .restaurants{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+
+    .card{
+      background: white;
+      border-radius: 18px;
+      padding: 15px;
+      box-shadow: 0px 4px 15px rgba(0,0,0,0.12);
+      transition: 0.3s;
+      border: 2px solid transparent;
+    }
+
+    .card:hover{
+      transform: translateY(-6px);
+      border: 2px solid #ff2e63;
+    }
+
+    .card img{
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 15px;
+    }
+
+    .card h3{
+      margin-top: 12px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .card p{
+      font-size: 14px;
+      color: gray;
+      margin: 5px 0;
+    }
+
+    .rating{
+      display: inline-block;
+      background: #00c853;
+      padding: 5px 10px;
+      border-radius: 12px;
+      color: white;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .menuBtn{
+      width: 100%;
+      margin-top: 12px;
+      padding: 12px;
+      border: none;
+      background: linear-gradient(90deg, #ff2e63, #ff7b54);
+      color: white;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .menuBtn:hover{
+      transform: scale(1.05);
+    }
+
+    .modal{
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.65);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 200;
+      padding: 15px;
+    }
+
+    .modalContent{
+      background: white;
+      width: 100%;
+      max-width: 650px;
+      padding: 20px;
+      border-radius: 18px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .closeBtn{
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      background: red;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .foodItem{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9f9f9;
+      padding: 12px;
+      border-radius: 14px;
+      margin: 12px 0;
+      border-left: 6px solid #ff2e63;
+      gap: 10px;
+    }
+
+    .foodItem img{
+      width: 70px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    .foodDetails{
+      flex: 1;
+    }
+
+    .foodDetails h4{
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .foodDetails p{
+      font-size: 13px;
+      color: gray;
+    }
+
+    .addBtn{
+      background: #00c853;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .addBtn:hover{
+      background: darkgreen;
+    }
+
+    .cartItem{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fff;
+      padding: 12px;
+      border-radius: 14px;
+      margin: 10px 0;
+      border: 1px solid #eee;
+    }
+
+    .cartControls{
+      display: flex;
+      gap: 8px;
+    }
+
+    .qtyBtn{
+      padding: 6px 12px;
+      border: none;
+      background: #ff2e63;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .removeBtn{
+      background: red;
+    }
+
+    .totalBox{
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 14px;
+      background: linear-gradient(90deg, #ff2e63, #ff7b54);
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .checkoutBtn{
+      margin-top: 15px;
+      width: 100%;
+      padding: 14px;
+      background: #222;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    footer{
+      margin-top: 30px;
+      padding: 15px;
+      text-align: center;
+      background: #222;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>🍔 FoodieGo</h1>
+
+    <div class="searchBox">
+      <input type="text" id="searchInput" placeholder="Search restaurants or food..." onkeyup="searchRestaurants()">
+    </div>
+
+    <button class="cartBtn" onclick="openCart()">🛒 Cart (<span id="cartCount">0</span>)</button>
+  </header>
+
+  <div class="container">
+    <div class="banner">
+      <h2>Order Your Favourite Food 😋</h2>
+      <p>Fast delivery | Best restaurants | Great offers 🔥</p>
+    </div>
+
+    <div class="categories">
+      <div class="cat" onclick="filterCuisine('all')">All</div>
+      <div class="cat" onclick="filterCuisine('Pizza')">Pizza</div>
+      <div class="cat" onclick="filterCuisine('Biryani')">Biryani</div>
+      <div class="cat" onclick="filterCuisine('Burger')">Burger</div>
+      <div class="cat" onclick="filterCuisine('South')">South Indian</div>
+      <div class="cat" onclick="filterCuisine('Dessert')">Desserts</div>
+    </div>
+
+    <h2 class="section-title">Restaurants Near You</h2>
+    <div class="restaurants" id="restaurantList"></div>
+  </div>
+
+  <footer>
+    <p>© 2026 FoodieGo | Zomato / Swiggy Inspired Website</p>
+  </footer>
+
+  <!-- MENU MODAL -->
+  <div class="modal" id="menuModal">
+    <div class="modalContent">
+      <button class="closeBtn" onclick="closeMenu()">X</button>
+      <h2 id="restaurantName"></h2>
+      <p id="restaurantInfo" style="color:gray;margin-top:5px;"></p>
+      <hr style="margin:15px 0;">
+      <div id="menuItems"></div>
+    </div>
+  </div>
+
+  <!-- CART MODAL -->
+  <div class="modal" id="cartModal">
+    <div class="modalContent">
+      <button class="closeBtn" onclick="closeCart()">X</button>
+      <h2>🛒 Your Cart</h2>
+
+      <div id="cartItems"></div>
+
+      <div class="totalBox">
+        <span>Total:</span>
+        <span>₹<span id="totalPrice">0</span></span>
+      </div>
+
+      <button class="checkoutBtn" onclick="checkout()">Checkout</button>
+    </div>
+  </div>
+
+  <script>
+    const restaurants = [
+      {
+        id: 1,
+        name: "Pizza Palace",
+        cuisine: "Pizza, Fast Food",
+        tag: "Pizza",
+        rating: 4.5,
+        image: "https://images.unsplash.com/photo-1601924638867-3ec4f259f3d5?auto=format&fit=crop&w=900&q=60",
+        menu: [
+          { item: "Margherita Pizza", price: 199, img: "https://images.unsplash.com/photo-1593560708920-61dd98c46a04?auto=format&fit=crop&w=500&q=60" },
+          { item: "Cheese Burst Pizza", price: 299, img: "https://images.unsplash.com/photo-1548365328-8b849e6f29ef?auto=format&fit=crop&w=500&q=60" },
+          { item: "Veg Supreme Pizza", price: 249, img: "https://images.unsplash.com/photo-1595854341625-f33ee10f0f49?auto=format&fit=crop&w=500&q=60" }
+        ]
+      },
+      {
+        id: 2,
+        name: "Biryani Hub",
+        cuisine: "Biryani, Indian",
+        tag: "Biryani",
+        rating: 4.7,
+        image: "https://images.unsplash.com/photo-1631515243342-2c5b1b8f4a52?auto=format&fit=crop&w=900&q=60",
+        menu: [
+          { item: "Chicken Biryani", price: 250, img: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=500&q=60" },
+          { item: "Mutton Biryani", price: 350, img: "https://images.unsplash.com/photo-1633945274405-b6c8069047b0?auto=format&fit=crop&w=500&q=60" },
+          { item: "Veg Biryani", price: 180, img: "https://images.unsplash.com/photo-1645177628172-a94c1f96e6db?auto=format&fit=crop&w=500&q=60" }
+        ]
+      },
+      {
+        id: 3,
+        name: "Burger Town",
+        cuisine: "Burgers, Snacks",
+        tag: "Burger",
+        rating: 4.3,
+        image: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=900&q=60",
+        menu: [
+          { item: "Veg Burger", price: 99, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=60" },
+          { item: "Chicken Burger", price: 149, img: "https://images.unsplash.com/photo-1550317138-10000687a72b?auto=format&fit=crop&w=500&q=60" },
+          { item: "Cheese Burger", price: 129, img: "https://images.unsplash.com/photo-1610440042657-612c34d95e9f?auto=format&fit=crop&w=500&q=60" }
+        ]
+      },
+      {
+        id: 4,
+        name: "South Spice",
+        cuisine: "Dosa, Idli, South Indian",
+        tag: "South",
+        rating: 4.6,
+        image: "https://images.unsplash.com/photo-1668236543550-9f86f0b48a2c?auto=format&fit=crop&w=900&q=60",
+        menu: [
+          { item: "Masala Dosa", price: 80, img: "https://images.unsplash.com/photo-1668236542841-44b5a4bffb71?auto=format&fit=crop&w=500&q=60" },
+          { item: "Idli Sambar", price: 50, img: "https://images.unsplash.com/photo-1625398407796-82650a8c135f?auto=format&fit=crop&w=500&q=60" },
+          { item: "Pongal", price: 70, img: "https://images.unsplash.com/photo-1668236543195-f86a9f69d1e0?auto=format&fit=crop&w=500&q=60" }
+        ]
+      },
+      {
+        id: 5,
+        name: "Sweet Treats",
+        cuisine: "Desserts, Ice Cream",
+        tag: "Dessert",
+        rating: 4.8,
+        image: "https://images.unsplash.com/photo-1542826438-bd32f43d626f?auto=format&fit=crop&w=900&q=60",
+        menu: [
+          { item: "Chocolate Brownie", price: 120, img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=500&q=60" },
+          { item: "Vanilla Ice Cream", price: 90, img: "https://images.unsplash.com/photo-1629385701021-fcd568a743a2?auto=format&fit=crop&w=500&q=60" },
+          { item: "Gulab Jamun", price: 70, img: "https://images.unsplash.com/photo-1601379762480-9c31c9c7c5d5?auto=format&fit=crop&w=500&q=60" }
+        ]
+      }
+    ];
+
+    let cart = [];
+    let currentList = restaurants;
+
+    function displayRestaurants(list) {
+      const restaurantList = document.getElementById("restaurantList");
+      restaurantList.innerHTML = "";
+
+      list.forEach(res => {
+        restaurantList.innerHTML += `
+          <div class="card">
+            <img src="${res.image}" alt="${res.name}">
+            <h3>${res.name}</h3>
+            <p>${res.cuisine}</p>
+            <span class="rating">⭐ ${res.rating}</span>
+            <button class="menuBtn" onclick="openMenu(${res.id})">View Menu</button>
+          </div>
+        `;
+      });
+    }
+
+    function searchRestaurants() {
+      const query = document.getElementById("searchInput").value.toLowerCase();
+
+      const filtered = currentList.filter(res =>
+        res.name.toLowerCase().includes(query) ||
+        res.cuisine.toLowerCase().includes(query) ||
+        res.menu.some(m => m.item.toLowerCase().includes(query))
+      );
+
+      displayRestaurants(filtered);
+    }
+
+    function filterCuisine(tag) {
+      document.getElementById("searchInput").value = "";
+
+      if (tag === "all") {
+        currentList = restaurants;
+      } else {
+        currentList = restaurants.filter(r => r.tag === tag);
+      }
+
+      displayRestaurants(currentList);
+    }
+
+    function openMenu(id) {
+      const restaurant = restaurants.find(r => r.id === id);
+
+      document.getElementById("restaurantName").innerText = restaurant.name;
+      document.getElementById("restaurantInfo").innerText =
+        restaurant.cuisine + " | ⭐ " + restaurant.rating;
+
+      const menuItems = document.getElementById("menuItems");
+      menuItems.innerHTML = "";
+
+      restaurant.menu.forEach(food => {
+        menuItems.innerHTML += `
+          <div class="foodItem">
+            <img src="${food.img}" alt="${food.item}">
+            <div class="foodDetails">
+              <h4>${food.item}</h4>
+              <p>Price: ₹${food.price}</p>
+            </div>
+            <button class="addBtn" onclick="addToCart('${food.item}', ${food.price})">Add</button>
+          </div>
+        `;
+      });
+
+      document.getElementById("menuModal").style.display = "flex";
+    }
+
+    function closeMenu() {
+      document.getElementById("menuModal").style.display = "none";
+    }
+
+    function addToCart(item, price) {
+      const existing = cart.find(c => c.item === item);
+
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({ item, price, qty: 1 });
+      }
+
+      updateCartCount();
+      alert(item + " added to cart!");
+    }
+
+    function updateCartCount() {
+      const count = cart.reduce((sum, c) => sum + c.qty, 0);
+      document.getElementById("cartCount").innerText = count;
+    }
+
+    function openCart() {
+      document.getElementById("cartModal").style.display = "flex";
+      displayCart();
+    }
+
+    function closeCart() {
+      document.getElementById("cartModal").style.display = "none";
+    }
+
+    function displayCart() {
+      const cartItems = document.getElementById("cartItems");
+      cartItems.innerHTML = "";
+
+      if (cart.length === 0) {
+        cartItems.innerHTML = "<p style='margin-top:10px;color:gray;'>Your cart is empty.</p>";
+        document.getElementById("totalPrice").innerText = 0;
+        return;
+      }
+
+      cart.forEach((c, index) => {
+        cartItems.innerHTML += `
+          <div class="cartItem">
+            <div>
+              <h4>${c.item}</h4>
+              <p>₹${c.price} × ${c.qty} = ₹${c.price * c.qty}</p>
+            </div>
+
+            <div class="cartControls">
+              <button class="qtyBtn" onclick="changeQty(${index}, 1)">+</button>
+              <button class="qtyBtn" onclick="changeQty(${index}, -1)">-</button>
+              <button class="qtyBtn removeBtn" onclick="removeItem(${index})">X</button>
+            </div>
+          </div>
+        `;
+      });
+
+      updateTotal();
+    }
+
+    function changeQty(index, change) {
+      cart[index].qty += change;
+
+      if (cart[index].qty <= 0) {
+        cart.splice(index, 1);
+      }
+
+      updateCartCount();
+      displayCart();
+    }
+
+    function removeItem(index) {
+      cart.splice(index, 1);
+      updateCartCount();
+      displayCart();
+    }
+
+    function updateTotal() {
+      let total = cart.reduce((sum, c) => sum + (c.price * c.qty), 0);
+      document.getElementById("totalPrice").innerText = total;
+    }
+
+    function checkout() {
+      if (cart.length === 0) {
+        alert("Your cart is empty!");
+        return;
+      }
+
+      let total = cart.reduce((sum, c) => sum + (c.price * c.qty), 0);
+
+      alert("✅ Order Placed Successfully!\nTotal Bill: ₹" + total + "\nThank you for ordering!");
+
+      cart = [];
+      updateCartCount();
+      displayCart();
+      closeCart();
+      closeMenu();
+    }
+
+    displayRestaurants(restaurants);
+  </script>
+
+</body>
+</html>
